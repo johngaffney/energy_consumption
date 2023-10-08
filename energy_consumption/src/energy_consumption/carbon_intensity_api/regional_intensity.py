@@ -1,7 +1,7 @@
 import json
 import requests
 
-from energy_consumption.constants import CARBON_INTENSITY_API
+from ..constants import CARBON_INTENSITY_API
 
 
 def get_regional_intensity_by_postcode(start_time: str, end_time: str, postcode: str):
