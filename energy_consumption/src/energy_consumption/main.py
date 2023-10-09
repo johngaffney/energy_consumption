@@ -23,14 +23,15 @@ def get_energy_consumption_details(meter_id: str, start_date: str, end_date: str
     post_code = get_customer_post_code_from_address(customer_address=customer.get("address"))
 
     # get usage data for meter in hh periods
+    adjusted_end_datetime = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+    adjusted_end_date = adjusted_end_datetime.strftime("%Y-%m-%d")
     usage_interval_data = get_interval_data(
-        meter_id=meter_id, start_date=start_date, end_date=end_date, granularity="hh"
+        meter_id=meter_id, start_date=start_date, end_date=adjusted_end_date, granularity="hh"
     )
     usage_data_by_hh_dict = create_hh_usage_interval_dict(usage_interval_data=usage_interval_data)
 
     interval_start_date_utc = datetime.strptime(start_date, "%Y-%m-%d")
-    interval_end_date_utc = datetime.strptime(end_date, "%Y-%m-%d")
-    num_of_days_in_request_period = (interval_end_date_utc - interval_start_date_utc).days
+    num_of_days_in_request_period = (adjusted_end_datetime - interval_start_date_utc).days
 
     # Get regional intensity for each day in request period
     for day_in_request_period in (
@@ -85,7 +86,7 @@ def get_energy_consumption_details(meter_id: str, start_date: str, end_date: str
         "total_energy_consumed": total_consumption_kwh,
         "energy_consumption_unit": "kWh",
         "total_emissions": total_emissions_kg_co2_kwh,
-        "emissions_unit": "kg CO2/kWh",
+        "emissions_unit": "kg CO2",
         "fuel_mix_percentage_breakdown": fuel_mix_percentage_breakdown,
     }
 
